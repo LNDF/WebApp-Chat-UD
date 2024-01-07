@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  login-app:
+    build:
+      context: ./login-app
+      dockerfile: Dockerfile
+    networks:
+      - chat-network
+
+  chat-app:
+    build:
+      context: ./chat-app
+      dockerfile: Dockerfile
+    networks:
+      - chat-network
+    depends_on:
+      - login-app
+
+  nginx-proxy:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    networks:
+      - chat-network
+    depends_on:
+      - chat-app
+      - login-app
+
+networks:
+  chat-network:
