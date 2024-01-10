@@ -19,8 +19,8 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    username = Column(String(255), unique=True, index=True)
+    hashed_password = Column(String(60))
     created_at = Column(DateTime, default=datetime.utcnow)
 
 # Create tables
@@ -35,7 +35,7 @@ def get_db():
         db.close()
 
 # FastAPI App
-app = FastAPI(openapi_prefix="/api")
+app = FastAPI(root_path="/api")
 
 # OAuth2PasswordBearer for token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
@@ -77,7 +77,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # API endpoint for creating a new user
 @app.post("/register/")
-async def register(username: str, password: str, db: Session = Depends(get_db)):
+async def register(username: str, password: str, db: SessionLocal = Depends(get_db)):
     hashed_password = pwd_context.hash(password)
     db_user = User(username=username, hashed_password=hashed_password)
     db.add(db_user)
@@ -87,7 +87,7 @@ async def register(username: str, password: str, db: Session = Depends(get_db)):
 
 # API endpoint for user login and token creation
 @app.post("/token/")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: SessionLocal = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not pwd_context.verify(form_data.password, user.hashed_password):
         raise HTTPException(
