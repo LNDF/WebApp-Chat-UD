@@ -3,3 +3,5 @@ uvicorn[standard]
 sqlalchemy
 databases[mysql]
 passlib[bcrypt]
+python-jose
+mysql-connector-python
