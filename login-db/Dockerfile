@@ -1,4 +1,4 @@
-FROM mariadb:latest
+FROM mariadb:11.2.2
 
 ENV MARIADB_ROOT_PASSWORD super_secure_root_password
 

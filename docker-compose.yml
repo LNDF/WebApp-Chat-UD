@@ -16,7 +16,7 @@ services:
       dockerfile: Dockerfile
     networks:
       - chat-network
-     depends_on:
+    depends_on:
       - login-db
 
   chat-app:
