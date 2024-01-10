@@ -35,10 +35,10 @@ def get_db():
         db.close()
 
 # FastAPI App
-app = FastAPI()
+app = FastAPI(openapi_prefix="/api")
 
 # OAuth2PasswordBearer for token authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
 # JWT Configuration
 SECRET_KEY = "your-secret-key"
