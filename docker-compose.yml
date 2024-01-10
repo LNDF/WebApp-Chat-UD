@@ -1,12 +1,23 @@
 version: '3'
 
 services:
+  login-db:
+    build:
+      context: ./login-db
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - chat-network
+
   login-app:
     build:
       context: ./login-app
       dockerfile: Dockerfile
     networks:
       - chat-network
+     depends_on:
+      - login-db
 
   chat-app:
     build:
