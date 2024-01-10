@@ -1,38 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from databases import Database
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
-
-# Database Setup
-DATABASE_URL = "mysql+mysqlconnector://webchatapp:webchatapp@login-db/webchatapp"
-database = Database(DATABASE_URL)
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# Models
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(255), unique=True, index=True)
-    hashed_password = Column(String(60))
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-# Create tables
-Base.metadata.create_all(bind=engine)
-
-# Dependency to get the current database session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+from datetime import timedelta
+from .userdb import User, SessionLocal, get_db
+from .models import RegisterData, RegisterResponse, LoginResponse, GetUsernameResponse
 
 # FastAPI App
 app = FastAPI(root_path="/api")
@@ -76,17 +48,17 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return username
 
 # API endpoint for creating a new user
-@app.post("/register/")
-async def register(username: str, password: str, db: SessionLocal = Depends(get_db)):
-    hashed_password = pwd_context.hash(password)
-    db_user = User(username=username, hashed_password=hashed_password)
+@app.post("/register/", response_model=RegisterResponse)
+async def register(data: RegisterData, db: SessionLocal = Depends(get_db)):
+    hashed_password = pwd_context.hash(data.password)
+    db_user = User(username=data.username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return {"username": db_user.username, "created_at": db_user.created_at}
 
 # API endpoint for user login and token creation
-@app.post("/token/")
+@app.post("/token/", response_model=LoginResponse)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: SessionLocal = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not pwd_context.verify(form_data.password, user.hashed_password):
@@ -99,7 +71,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: SessionLoc
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
-# Example protected API endpoint
-@app.get("/protected/")
-async def protected_route(current_user: str = Depends(get_current_user)):
-    return {"message": f"Hello {current_user}, you are authorized!"}
+# API endpoint to get user name from token (used in chat app)
+@app.get("/user/", response_model=GetUsernameResponse)
+async def get_username(current_user: str = Depends(get_current_user)):
+    return {"username": current_user}
