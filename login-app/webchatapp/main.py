@@ -48,7 +48,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return username
 
 # API endpoint for creating a new user
-@app.post("/api/register/", response_model=RegisterResponse)
+@app.post("/api/user/", response_model=RegisterResponse)
 async def register(data: RegisterData, db: SessionLocal = Depends(get_db)):
     hashed_password = pwd_context.hash(data.password)
     db_user = User(username=data.username, hashed_password=hashed_password)
