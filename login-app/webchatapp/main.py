@@ -2,12 +2,12 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from datetime import timedelta
+from datetime import timedelta, datetime
 from .userdb import User, SessionLocal, get_db
 from .models import RegisterData, RegisterResponse, LoginResponse, GetUsernameResponse
 
 # FastAPI App
-app = FastAPI(root_path="/api")
+app = FastAPI(title="Web Chat", description="This is a realtime web chat", version="1.0.0")
 
 # OAuth2PasswordBearer for token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
@@ -48,7 +48,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return username
 
 # API endpoint for creating a new user
-@app.post("/register/", response_model=RegisterResponse)
+@app.post("/api/register/", response_model=RegisterResponse)
 async def register(data: RegisterData, db: SessionLocal = Depends(get_db)):
     hashed_password = pwd_context.hash(data.password)
     db_user = User(username=data.username, hashed_password=hashed_password)
@@ -58,7 +58,7 @@ async def register(data: RegisterData, db: SessionLocal = Depends(get_db)):
     return {"username": db_user.username, "created_at": db_user.created_at}
 
 # API endpoint for user login and token creation
-@app.post("/token/", response_model=LoginResponse)
+@app.post("/api/token/", response_model=LoginResponse)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: SessionLocal = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not pwd_context.verify(form_data.password, user.hashed_password):
@@ -72,6 +72,6 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: SessionLoc
     return {"access_token": access_token, "token_type": "bearer"}
 
 # API endpoint to get user name from token (used in chat app)
-@app.get("/user/", response_model=GetUsernameResponse)
+@app.get("/api/user/", response_model=GetUsernameResponse)
 async def get_username(current_user: str = Depends(get_current_user)):
     return {"username": current_user}

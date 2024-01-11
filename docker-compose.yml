@@ -39,7 +39,8 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - "8000:80"
+      - "80:80"
+      - "8000:8080"
     networks:
       - chat-network
     depends_on:

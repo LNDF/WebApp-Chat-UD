@@ -9,6 +9,10 @@ class RegisterResponse(BaseModel):
     username: str
     created_at: datetime
 
+class LoginData(BaseModel):
+    username: str
+    password: str
+
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str
