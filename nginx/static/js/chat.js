@@ -1,0 +1,7 @@
+function joinChat() {
+    
+}
+
+function leaveChat() {
+    
+}

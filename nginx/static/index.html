@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Login and Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="forms-container">
+        <div class="form">
+            <h1>Login</h1>
+            <form id="login">
+                <div class="input-field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button id="login-button" type="submit" class="button">Login</button>
+            </form>
+        </div>
+        <div class="form">
+            <h1>Register</h1>
+            <form id="register">
+                <div class="input-field">
+                    <label for="new-username">Username</label>
+                    <input type="text" id="new-username" name="new-username" required>
+                </div>
+                <div class="input-field">
+                    <label for="new-password">Password</label>
+                    <input type="password" id="new-password" name="new-password" required>
+                    <label for="new-password-repeat">Repeat password</label>
+                    <input type="password" id="new-password-repeat" name="new-password" required>
+                </div>
+                <button id="register-button" type="submit" class="button">Register</button>
+            </form>
+        </div>
+    </div>
+    <div id="chat-container">
+        <div id="header">
+            <div class="title">Chatroom</div>
+            <button id="logout-button">Logout</button>
+        </div>
+        <div id="messages">
+            <div class="message sent">Hello there!</div>
+            <div class="message received">Hi! How can I help you?</div>
+            <div class="message sent">I have a question.</div>
+            <div class="message received">Sure, go ahead.</div>
+        </div>
+        <div id="input-container">
+            <input type="text" id="message-input" placeholder="Type your message">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script src="js/cookie.js"></script>
+    <script src="js/login.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>

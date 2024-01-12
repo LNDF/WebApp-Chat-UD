@@ -1,6 +1,9 @@
 from webchatapp.main import app
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import logging
+
+logging.getLogger('passlib').setLevel(logging.ERROR)
 
 app.add_middleware(
     CORSMiddleware,

@@ -50,6 +50,11 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 # API endpoint for creating a new user
 @app.post("/api/user/", response_model=RegisterResponse)
 async def register(data: RegisterData, db: SessionLocal = Depends(get_db)):
+    if data.username.lower() == "admin":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username 'admin' is not allowed.")
+    existing_user = db.query(User).filter(User.username == data.username).first()
+    if existing_user:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already exists.")
     hashed_password = pwd_context.hash(data.password)
     db_user = User(username=data.username, hashed_password=hashed_password)
     db.add(db_user)
