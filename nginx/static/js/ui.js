@@ -11,6 +11,33 @@ function loadChatContainer() {
     chatContainer.style.display = "flex";
 }
 
+function clearChatlog() {
+    document.getElementById("messages").innerHTML = "";
+}
+
+function appendChatMessage(message, username) {
+    const div = document.createElement("div");
+    div.classList.add("message");
+    if (username == null) {
+        div.classList.add("sent");
+        div.innerText = message;
+    } else {
+        div.classList.add("received");
+        div.innerText = username + ":\n" + message;
+    }
+    document.getElementById("messages").appendChild(div);
+}
+
+function uiSendChatMessage() {
+    const messageInput = document.getElementById("message-input");
+    const message = messageInput.value;
+    console.log(message);
+    if (message !== "") {
+        sendChatMessage(message);
+        messageInput.value = "";
+    }
+}
+
 async function uiLogin() {
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
@@ -67,8 +94,17 @@ document.getElementById("logout-button").addEventListener("click", e => {
 
 document.getElementById("send-button").addEventListener("click", e => {
     e.preventDefault();
-    //Send message
+    uiSendChatMessage();
     return false;
+});
+
+document.getElementById("message-input").addEventListener("keypress", e => {
+    if (e.key == "Enter") {
+        e.preventDefault();
+        uiSendChatMessage();
+        return false;
+    }
+    return true;
 });
 
 loadFormsContainer();

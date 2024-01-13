@@ -20,7 +20,7 @@ const cookie = {
 				return c.substring(name.length, c.length);	
 			}
 		}
-		return "";
+		return null;
 	},
 	delete: function (name) {
 		cookie.set(name, "", -1);
