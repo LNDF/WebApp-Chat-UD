@@ -1,5 +1,6 @@
 let formsContainer = document.getElementById("forms-container");
 let chatContainer = document.getElementById("chat-container");
+let shouldScrollChat = true;
 
 function loadFormsContainer() {
     formsContainer.style.display = "flex";
@@ -13,6 +14,7 @@ function loadChatContainer() {
 
 function clearChatlog() {
     document.getElementById("messages").innerHTML = "";
+    shouldScrollChat = true;
 }
 
 function appendChatMessage(message, username) {
@@ -25,13 +27,14 @@ function appendChatMessage(message, username) {
         div.classList.add("received");
         div.innerText = username + ":\n" + message;
     }
-    document.getElementById("messages").appendChild(div);
+    const messages = document.getElementById("messages");
+    messages.appendChild(div);
+    if (shouldScrollChat) messages.scrollTop = (messages.scrollHeight - messages.offsetHeight);
 }
 
 function uiSendChatMessage() {
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value;
-    console.log(message);
     if (message !== "") {
         sendChatMessage(message);
         messageInput.value = "";
@@ -105,6 +108,10 @@ document.getElementById("message-input").addEventListener("keypress", e => {
         return false;
     }
     return true;
+});
+
+document.getElementById("messages").addEventListener("scroll", e => {
+    shouldScrollChat = e.target.scrollTop === (e.target.scrollHeight - e.target.offsetHeight);
 });
 
 loadFormsContainer();
